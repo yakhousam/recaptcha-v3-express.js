@@ -1,0 +1,35 @@
+extends layout
+
+block content
+  h1= title
+  form()
+    input#name(type="text", name="name", placeholder="name")
+    input#email(type="email", name="email" placeholder="email")
+    input(type="submit", value="submit")
+  script(src="https://www.google.com/recaptcha/api.js?render=" + reCAPTCHA_site_key)
+  script(type="text/javascript").
+    document.querySelector('form').addEventListener('submit', e =>{
+       e.preventDefault()
+      grecaptcha.execute('6LeE3MwUAAAAALUNIe5jBGsv1QBzS6gs4lgaPUwF', {action: 'contact'}).then(async function(token) {
+        try {
+          const body = {
+            name: e.target.name.value,
+            email: e.target.email.value,
+            token
+          }
+          const res = await fetch('/contact', {
+              method: 'post',
+              body:    JSON.stringify(body),
+              headers: { 'Content-Type': 'application/json' }
+          })
+          const json = await res.json()
+
+          console.log('json =', json)
+    
+        } catch (error) {
+          console.error(error)
+        }
+      });
+    })
+
+  
